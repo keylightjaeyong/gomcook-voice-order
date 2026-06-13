@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FF6B35">
+<title>GOMCOOK QR 생성기</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand: #FF6B35;
+    --brand-dark: #e55a26;
+    --brand-light: #fff3ee;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+    --text-hint: #999;
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --border: #e5e5e5;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .header {
+    background: var(--brand);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #fff;
+  }
+  .header h1 { color: #fff; font-size: 17px; font-weight: 600; }
+  .header-sub { color: rgba(255,255,255,0.75); font-size: 13px; }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    padding: 12px 16px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .card-body { padding: 12px 16px 16px; }
+
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 15px;
+    color: var(--text-primary);
+    background: var(--surface);
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus { border-color: var(--brand); }
+
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .btn {
+    width: 100%;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { transform: scale(0.98); background: var(--brand-dark); }
+  .btn-outline {
+    background: var(--surface);
+    color: var(--brand);
+    border: 1.5px solid var(--brand);
+  }
+  .btn-outline:active { background: var(--brand-light); }
+
+  .hint-text { font-size: 12px; color: var(--text-hint); margin-top: 6px; }
+
+  /* QR grid */
+  .qr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .qr-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 12px 12px;
+    text-align: center;
+    position: relative;
+  }
+  .qr-card .table-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .qr-canvas-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .qr-canvas-wrap canvas, .qr-canvas-wrap img { border-radius: 4px; }
+  .qr-url {
+    font-size: 9px;
+    color: var(--text-hint);
+    word-break: break-all;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .dl-btn {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px;
+    font-size: 12px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dl-btn:active { background: var(--border); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-hint);
+    font-size: 14px;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  .tip-box {
+    background: var(--brand-light);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #b34a1e;
+    line-height: 1.6;
+  }
+  .tip-box strong { font-weight: 600; }
+
+  @media print {
+    .header, .card:first-of-type, .tip-box, .btn { display: none; }
+    .qr-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-mark">G</div>
+  <div>
+    <h1>GOMCOOK QR 생성기</h1>
+    <div class="header-sub">테이블별 QR 코드 생성 (점주용)</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 설정 카드 -->
+  <div class="card">
+    <div class="card-header">기본 설정</div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label>주문 앱 URL</label>
+        <input type="text" id="baseUrl" placeholder="https://gomcook-voice-order.vercel.app">
+        <div class="hint-text">Vercel 배포 후 실제 URL로 변경하세요. 로컬 테스트: http://localhost:3456</div>
+      </div>
+      <div class="row">
+        <div>
+          <label>매장 번호 (storeIdx)</label>
+          <input type="number" id="storeIdx" value="10" min="1" oninput="updatePreview()">
+        </div>
+        <div>
+          <label>키오스크 번호 (kiosk)</label>
+          <input type="number" id="kioskNum" value="1" min="1" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>시작 테이블 번호</label>
+          <input type="number" id="tableStart" value="1" min="1" max="99" oninput="updatePreview()">
+        </div>
+        <div>
+          <label>끝 테이블 번호</label>
+          <input type="number" id="tableEnd" value="10" min="1" max="99" oninput="updatePreview()">
+        </div>
+      </div>
+      <div>
+        <label>언어 (lang)</label>
+        <select id="langSelect" onchange="updatePreview()">
+          <option value="ko">한국어 (ko)</option>
+          <option value="en">영어 (en)</option>
+          <option value="zh">중국어 (zh)</option>
+          <option value="ja">일본어 (ja)</option>
+        </select>
+      </div>
+      <div>
+        <label>생성될 URL 미리보기 (테이블 1번 기준)</label>
+        <div id="urlPreview" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-family:monospace;color:var(--text-secondary);word-break:break-all;"></div>
+      </div>
+      <button class="btn" onclick="generateAll()">QR 코드 생성</button>
+    </div>
+  </div>
+
+  <!-- 안내 -->
+  <div class="tip-box" style="margin-bottom:16px">
+    <strong>사용 방법:</strong><br>
+    ① URL을 입력하고 테이블 범위를 지정 후 생성<br>
+    ② 각 QR 카드 아래 [PNG 저장] 버튼으로 인쇄용 파일 다운로드<br>
+    ③ 손님이 QR을 스캔하면 해당 테이블 번호로 바로 음성 주문 화면 진입
+  </div>
+
+  <!-- QR 결과 -->
+  <div class="card">
+    <div class="card-header" style="padding-bottom:12px">생성된 QR 코드</div>
+    <div class="card-body" style="padding-top:0">
+      <div class="qr-grid" id="qrGrid">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          위 설정 후 [QR 코드 생성] 버튼을 눌러주세요
+        </div>
+      </div>
+      <div id="printArea" style="margin-top:16px;display:none">
+        <button class="btn btn-outline" onclick="window.print()">🖨️ 전체 인쇄</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function buildUrl(base, table, store, kiosk, lang) {
+  const b = base.trim().replace(/\/$/, '');
+  return `${b}/?table=${table}&store=${store}&kiosk=${kiosk}&lang=${lang}`;
+}
+
+function updatePreview() {
+  const base  = document.getElementById('baseUrl').value || location.origin;
+  const store = document.getElementById('storeIdx').value || 10;
+  const kiosk = document.getElementById('kioskNum').value || 1;
+  const lang  = document.getElementById('langSelect').value || 'ko';
+  const start = document.getElementById('tableStart').value || 1;
+  const el = document.getElementById('urlPreview');
+  if (el) el.textContent = buildUrl(base, start, store, kiosk, lang);
+}
+
+function generateAll() {
+  const base  = document.getElementById('baseUrl').value || location.origin;
+  const start = parseInt(document.getElementById('tableStart').value) || 1;
+  const end   = parseInt(document.getElementById('tableEnd').value) || 1;
+  const store = parseInt(document.getElementById('storeIdx').value) || 10;
+  const kiosk = parseInt(document.getElementById('kioskNum').value) || 1;
+  const lang  = document.getElementById('langSelect').value || 'ko';
+
+  if (start > end) { alert('시작 번호가 끝 번호보다 클 수 없습니다.'); return; }
+  if (end - start > 49) { alert('한 번에 최대 50개까지 생성 가능합니다.'); return; }
+
+  const grid = document.getElementById('qrGrid');
+  grid.innerHTML = '';
+
+  for (let t = start; t <= end; t++) {
+    const url = buildUrl(base, t, store, kiosk, lang);
+    const card = document.createElement('div');
+    card.className = 'qr-card';
+    card.innerHTML = `
+      <div class="table-label">테이블 ${t}번</div>
+      <div class="qr-canvas-wrap" id="qr-wrap-${t}"></div>
+      <div class="qr-url">${url}</div>
+      <button class="dl-btn" onclick="downloadQR(${t})">⬇ PNG 저장</button>`;
+    grid.appendChild(card);
+
+    new QRCode(document.getElementById(`qr-wrap-${t}`), {
+      text: url,
+      width: 120,
+      height: 120,
+      colorDark: '#1a1a1a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  }
+
+  document.getElementById('printArea').style.display = 'block';
+}
+
+function downloadQR(tableNum) {
+  const wrap = document.getElementById(`qr-wrap-${tableNum}`);
+  const canvas = wrap.querySelector('canvas');
+  const img    = wrap.querySelector('img');
+
+  if (canvas) {
+    const link = document.createElement('a');
+    link.download = `GOMCOOK_table_${tableNum}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } else if (img) {
+    const link = document.createElement('a');
+    link.download = `GOMCOOK_table_${tableNum}.png`;
+    link.href = img.src;
+    link.click();
+  }
+}
+
+// 기본 URL 자동 설정
+document.getElementById('baseUrl').value = location.origin;
+updatePreview();
+</script>
+</body>
+</html>
