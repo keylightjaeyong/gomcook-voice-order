@@ -557,10 +557,11 @@ function showToast(msg, ms = 3000) {
 async function loadMenus() {
   renderMain(true);
   try {
-    const data = await apiFetch('/api/store/menu', { storeIdx: STORE_IDX, language: LANG });
+    const resp = await apiFetch('/api/store/menu', { storeIdx: STORE_IDX, language: LANG });
+    const menuData = resp.data || resp;
     const all = [];
-    (data.totalMenu || []).forEach(cat => (cat.menuList || []).forEach(m => { if (m.menuSaleStatus === 1) all.push(m); }));
-    (data.specialMenu || []).forEach(m => { if (m.menuSaleStatus === 1 && !all.find(x => String(x.menuIdx) === String(m.menuIdx))) all.push(m); });
+    (menuData.totalMenu || []).forEach(cat => (cat.menuList || []).forEach(m => { if (m.menuSaleStatus === 1) all.push(m); }));
+    (menuData.specialMenu || []).forEach(m => { if (m.menuSaleStatus === 1 && !all.find(x => String(x.menuIdx) === String(m.menuIdx))) all.push(m); });
     menus = all;
     console.log('[GOMCOOK] 메뉴 로드 완료:', menus.length);
     if (menus.length === 0) {

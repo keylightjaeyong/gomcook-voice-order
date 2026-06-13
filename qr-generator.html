@@ -195,7 +195,7 @@
     <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
       <div>
         <label>주문 앱 URL</label>
-        <input type="text" id="baseUrl" placeholder="https://gomcook-voice-order.vercel.app">
+        <input type="text" id="baseUrl" placeholder="https://gomcook-voice-order.vercel.app" value="https://gomcook-voice-order.vercel.app">
         <div class="hint-text">Vercel 배포 후 실제 URL로 변경하세요. 로컬 테스트: http://localhost:3456</div>
       </div>
       <div class="row">
@@ -333,8 +333,6 @@ function downloadQR(tableNum) {
   }
 }
 
-// 기본 URL 자동 설정
-document.getElementById('baseUrl').value = location.origin;
 updatePreview();
 </script>
 </body>
