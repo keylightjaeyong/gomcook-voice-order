@@ -495,8 +495,8 @@ const T = I18N[LANG] || I18N.ko;
 
 // ── 키워드 → 메뉴 매핑 ───────────────────────────────────────────
 const KEYWORDS = LANG === 'en' ? {
-  'americano':        { idx: '111', name: 'Americano',      emoji: '☕' },
-  'coffee':           { idx: '111', name: 'Americano',      emoji: '☕' },
+  'americano':        { idx: '110', name: 'Americano',      emoji: '☕' },
+  'coffee':           { idx: '110', name: 'Americano',      emoji: '☕' },
   'water':            { idx: '112', name: 'Cafe Water',     emoji: '💧' },
   'sparkling':        { idx: '115', name: 'Sparkling Water',emoji: '🫧' },
   'sparkling water':  { idx: '115', name: 'Sparkling Water',emoji: '🫧' },
@@ -504,9 +504,9 @@ const KEYWORDS = LANG === 'en' ? {
   'latte':            { idx: '118', name: 'Latte Tea',      emoji: '🍵' },
   'cappuccino':       { idx: '119', name: 'Cappuccino',     emoji: '☕' },
 } : {
-  '아메리카노': { idx: '111', name: '아메리카노', emoji: '☕' },
-  '아메':       { idx: '111', name: '아메리카노', emoji: '☕' },
-  '커피':       { idx: '111', name: '아메리카노', emoji: '☕' },
+  '아메리카노': { idx: '110', name: '아메리카노', emoji: '☕' },
+  '아메':       { idx: '110', name: '아메리카노', emoji: '☕' },
+  '커피':       { idx: '110', name: '아메리카노', emoji: '☕' },
   '물':         { idx: '112', name: '카페 물',    emoji: '💧' },
   '탄산':       { idx: '115', name: '탄산 물',    emoji: '🫧' },
   '탄산수':     { idx: '115', name: '탄산 물',    emoji: '🫧' },
@@ -577,7 +577,7 @@ async function loadMenus() {
 
 function getDemoMenus() {
   return [
-    { menuIdx:'111', menuTitle:'아메리카노', menuPrice:1800, menuSaleStatus:1 },
+    { menuIdx:'110', menuTitle:'아메리카노', menuPrice:1800, menuSaleStatus:1 },
     { menuIdx:'112', menuTitle:'카페 물',    menuPrice:500,  menuSaleStatus:1 },
     { menuIdx:'115', menuTitle:'탄산 물',    menuPrice:700,  menuSaleStatus:1 },
     { menuIdx:'116', menuTitle:'카페 모카',  menuPrice:2500, menuSaleStatus:1 },
