@@ -532,7 +532,7 @@ let menus = [], cart = [], recognition = null, isListening = false, countdownTim
 // ── API ──────────────────────────────────────────────────────────
 function apiUrl(path, params = {}) {
   const qs = new URLSearchParams(params).toString();
-  if (IS_HTTPS) return `/api/proxy?path=${encodeURIComponent(path)}&${qs}`;
+  if (location.protocol === 'https:') return `/api/proxy?path=${encodeURIComponent(path)}&${qs}`;
   return `http://api-eu.gomcook.com${path}?${qs}`;
 }
 async function apiFetch(path, qp = {}, method = 'GET', body = null) {
